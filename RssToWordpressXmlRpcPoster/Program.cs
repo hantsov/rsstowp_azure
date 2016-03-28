@@ -103,7 +103,7 @@ namespace RssToWordpressXmlRpcPoster
                 DisplayErrors(errors);
             }
             Console.WriteLine("Done!");
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         private static void DisplayErrors(List<string> errors)
@@ -115,7 +115,7 @@ namespace RssToWordpressXmlRpcPoster
                 Console.WriteLine(i + ". " + error);
 
             }
-            Console.ReadLine();
+            //Console.ReadLine();
             Environment.Exit(0);
         }
     }
