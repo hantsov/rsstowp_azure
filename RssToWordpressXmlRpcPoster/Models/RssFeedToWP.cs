@@ -20,22 +20,16 @@ namespace RssToWordpressXmlRpcPoster.Models
         private RssFeedService rssFeed;
         public WordPress wpClient;
 
-        public RssFeedToWP(string path, int blogid)
+        public RssFeedToWP(UserData userdata)
         {
-            Initialize(path, blogid);
+            Initialize(userdata);
         }
 
-        private void Initialize(string path, int blogid)
+        private void Initialize(UserData userdata)
         {
-            var x = new XmlDocument();
-            x.Load(path);
-            string username = x.SelectSingleNode("//WordPress/Username").InnerText;
-            string password = x.SelectSingleNode("//WordPress/Password").InnerText;
-            string site = x.SelectSingleNode("//WordPress/Site").InnerText;
-            string feedUrl = x.SelectSingleNode("//Feed/Url").InnerText;
-            readerService = new ReadabilityService(path);
-            rssFeed = new RssFeedService(feedUrl);
-            wpClient = new WordPress(username, password, site, blogid);
+            readerService = new ReadabilityService(userdata.ReaderToken);
+            rssFeed = new RssFeedService(userdata.FeedUrl);
+            wpClient = new WordPress(userdata.WpUser, userdata.WpPassword, userdata.WpUrl, userdata.WpBlogId);
         }
 
         public List<RssWithUrl> PostsFromReadability(List<RssModel> feedPosts)

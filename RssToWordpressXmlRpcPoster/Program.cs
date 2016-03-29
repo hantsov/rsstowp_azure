@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
+using System.Configuration;
 using RssToWordpressXmlRpcPoster.Models;
 
 namespace RssToWordpressXmlRpcPoster
@@ -9,76 +11,36 @@ namespace RssToWordpressXmlRpcPoster
     {
         static void Main(string[] args)
         {
-            //List<string> errors = new List<string>();
-            //string path = CheckFilePath(errors);
-            //int id = CheckBlogId(errors);
-            //if (errors.Count == 0)
-            //{
-            //    Publish(path, id);
-            //}
-            //else
-            //    DisplayErrors(errors);
 
-            List<string> errors = new List<string>();
-            //string path = CheckFilePath(errors);
-            //int id = CheckBlogId(errors);
-            string path = Directory.GetCurrentDirectory() + "/Keys.xml";
-            //Console.WriteLine(path);
-            int id = 1;
-            if (errors.Count == 0)
-            {
-                Publish(path, id);
-            }
-            else
-                DisplayErrors(errors);
+            Publish(GetUserData());
 
         }
 
-        private static int CheckBlogId(List<string> errors)
+        private static UserData GetUserData()
         {
-            Console.WriteLine("Please enter the id of your blog (leave empty if default of 1, this is needed for multisite):");
-            var blogid = Console.ReadLine();
-            int id;
-            if (!string.IsNullOrEmpty(blogid))
+            var rawuUserdata = ConfigurationManager.GetSection("userdata") as NameValueCollection;
+            var userdata = new UserData();
+            if (userdata != null)
             {
-                ;
-                if (!int.TryParse(blogid, out id))
-                {
-                    errors.Add("Invalid id input");
-                }
+                userdata.FeedUrl = rawuUserdata.Get("FeedUrl");
+                userdata.ReaderToken = rawuUserdata.Get("ReaderToken");
+                userdata.WpPassword = rawuUserdata.Get("WpPassword");
+                userdata.WpUrl = rawuUserdata.Get("WpUrl");
+                userdata.WpUser = rawuUserdata.Get("WpUser");
+                userdata.WpBlogId = int.Parse(rawuUserdata.Get("WpBlogId"));
+
             }
-            else
-                id = 1;
-            return id;
+            return userdata;
+
         }
 
-        private static string CheckFilePath(List<string> errors)
-        {
-            Console.WriteLine("Please construct a Keys.xml file with specified structure " +
-                                          "and type the path to that file here (leave empty if using default path):");
-            var path = Console.ReadLine();
-
-
-            if (string.IsNullOrEmpty(path))
-            {
-                path = Directory.GetCurrentDirectory() + "/Keys.xml";
-            }
-            if (!File.Exists(path))
-            {
-                errors.Add("File path invalid.");
-                DisplayErrors(errors);
-            }
-
-            return path;
-        }
-
-        private static void Publish(string path, int id)
+        private static void Publish(UserData userdata)
         {
             var errors = new List<string>();
             try
             {
                 Console.WriteLine("Please wait for completion...");
-                RssFeedToWP rssToWp = new RssFeedToWP(path, id);
+                RssFeedToWP rssToWp = new RssFeedToWP(userdata);
 
                 var newPosts = rssToWp.GetNonDuplicatePosts();
                 if (newPosts == null)
@@ -103,7 +65,6 @@ namespace RssToWordpressXmlRpcPoster
                 DisplayErrors(errors);
             }
             Console.WriteLine("Done!");
-            //Console.ReadLine();
         }
 
         private static void DisplayErrors(List<string> errors)
@@ -115,7 +76,6 @@ namespace RssToWordpressXmlRpcPoster
                 Console.WriteLine(i + ". " + error);
 
             }
-            //Console.ReadLine();
             Environment.Exit(0);
         }
     }

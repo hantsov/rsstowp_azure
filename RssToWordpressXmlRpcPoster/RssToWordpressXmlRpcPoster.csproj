@@ -57,6 +57,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -74,6 +75,7 @@
     <Compile Include="Models\RssUptime\ReaderAPIParserJson.cs" />
     <Compile Include="Models\RssUptime\RssModel.cs" />
     <Compile Include="Models\RssUptime\RssWithUrl.cs" />
+    <Compile Include="Models\UserData.cs" />
     <Compile Include="Models\WordPress.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Services\ReadabilityService.cs" />
